@@ -9,7 +9,7 @@ if [ ! -f "$HISTORY_FILE" ]; then
 fi
 
 CURRENT_TIMESTAMP=$(date +"%s")
-VIEWER_COUNT=$(curl -s https://twitchtracker.com/statistics/viewers | grep -m 1 "g-x-s-value to-number" | grep -oe '\([0-9]*\)')
+VIEWER_COUNT=$(curl -s -b "cf_clearance=$CLOUDFLARE_COOKIE" -A "$USER_AGENT" https://twitchtracker.com/statistics/viewers | grep -m 1 "g-x-s-value to-number" | grep -oe '\([0-9]*\)')
 
 echo $CURRENT_TIMESTAMP,$VIEWER_COUNT >> $HISTORY_FILE
 
