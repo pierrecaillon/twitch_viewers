@@ -18,7 +18,7 @@ def serve_layout():
     return html.Div(children=[
         html.H1('Twitch viewership'),
 
-        html.Div(f"Live viewers now: {df['count'].iloc[-1]}"),
+        html.Div([f"Live viewers now: ", html.B(df['count'].iloc[-1])]),
 
         dcc.Graph(
             id='view-count',
