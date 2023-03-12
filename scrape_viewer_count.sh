@@ -1,6 +1,8 @@
 #!/bin/bash
 
-HISTORY_FILE="./history.csv"
+SCRIPT=$(realpath "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+HISTORY_FILE=$SCRIPTPATH/history.csv
 
 if [ ! -f "$HISTORY_FILE" ]; then
 	echo "timestamp,count" > $HISTORY_FILE

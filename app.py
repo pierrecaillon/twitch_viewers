@@ -2,6 +2,7 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
 from dash import Dash, html, dcc
+from pathlib import Path
 import plotly.express as px
 import pandas as pd
 
@@ -11,8 +12,11 @@ app.title = "Twitch viewership"
 server = app.server
 
 
+HISTORY_PATH = Path().absolute() / "history.csv"
+
+
 def serve_layout():
-    df = pd.read_csv("./history.csv")
+    df = pd.read_csv(HISTORY_PATH)
     df["date"] = pd.to_datetime(df["timestamp"], unit="s")
     fig = px.line(df, x="date", y="count")
 
