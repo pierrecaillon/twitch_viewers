@@ -7,6 +7,7 @@ import pandas as pd
 
 
 app = Dash(__name__)
+app.title = "Twitch viewership"
 server = app.server
 
 
@@ -23,7 +24,9 @@ def serve_layout():
         dcc.Graph(
             id='view-count',
             figure=fig
-        )
+        ),
+
+        html.I('Made by Pierre CAILLON'),
     ])
 
 
