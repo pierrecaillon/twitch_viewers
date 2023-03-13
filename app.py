@@ -28,7 +28,7 @@ def serve_layout():
 
         html.Footer(
             html.I([
-                'Website made by Pierre CAILLON. Data scrapped from ',
+                'Website made by Pierre CAILLON. Data scraped from ',
                 html.A("TwitchTracker", href="https://twitchtracker.com"),
                 '. View source code on ',
                 html.A("GitHub", href="https://github.com/pierrecaillon/twitch_viewers"),
