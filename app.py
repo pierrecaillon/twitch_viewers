@@ -13,11 +13,27 @@ server = app.server
 HISTORY_PATH = Path().absolute() / "history.csv"
 
 
-def serve_layout():
+def load_data():
     df = pd.read_csv(HISTORY_PATH)
     df["date"] = pd.to_datetime(df["timestamp"], unit="s")
+    return df
+
+
+def serve_layout():
+    df = load_data()
     fig = px.line(df, x="date", y="count", title="Concurrent viewers over time")
     fig.update_layout(title_x=0.5)
+    fig.update_xaxes(
+        rangeslider_visible=True,
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1, label="1h", step="hour", stepmode="backward"),
+                dict(count=1, label="1d", step="day", stepmode="backward"),
+                dict(count=7, label="1w", step="day", stepmode="backward"),
+                dict(step="all")
+            ])
+        )
+    )
 
     return html.Div(children=[
         html.H1('Twitch viewership', className="header-title", style={'textAlign': 'center'}),
@@ -36,6 +52,8 @@ def serve_layout():
             ])
         ),
     ])
+
+
 
 
 app.layout = serve_layout
