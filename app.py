@@ -1,6 +1,8 @@
-import pandas as pd
+
+import pytz
 import datetime
 import plotly.express as px
+import pandas as pd
 
 from pathlib import Path
 from datetime import datetime, timedelta, date, time
@@ -19,7 +21,9 @@ HISTORY_PATH = Path().absolute() / "history.csv"
 def load_data():
     df = pd.read_csv(HISTORY_PATH)
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
-    df = df.set_index('timestamp')
+    df["timestamp"] = df["timestamp"].dt.tz_localize(pytz.utc)
+    df["timestamp"] = df["timestamp"].dt.tz_convert(pytz.timezone("Europe/Paris"))
+    df = df.set_index("timestamp")
     return df
 
 
