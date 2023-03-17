@@ -41,7 +41,6 @@ def serve_layout():
     fig = px.line(df, y="count", title="Concurrent viewers over time")
     fig.update_layout(title_x=0.5)
     fig.update_xaxes(
-        rangeslider_visible=True,
         rangeselector=dict(
             buttons=list([
                 dict(count=1, label="1h", step="hour", stepmode="backward"),
