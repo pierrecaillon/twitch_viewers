@@ -8,16 +8,21 @@ from pathlib import Path
 from datetime import datetime, timedelta, date, time
 from functools import lru_cache
 from dash import Dash, html, dcc
+from flask_caching import Cache
 
 
 app = Dash(__name__)
 app.title = "Twitch viewership"
+cache = Cache(app.server, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': 'cache-directory'
+})
 server = app.server
 
 
 HISTORY_PATH = Path().absolute() / "history.csv"
 
-
+@cache.memoize(timeout=5*60)
 def load_data():
     df = pd.read_csv(HISTORY_PATH)
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
