@@ -5,7 +5,7 @@ import plotly.express as px
 import pandas as pd
 
 from pathlib import Path
-from datetime import datetime, timedelta, date, time
+from datetime import datetime, timedelta, time
 from functools import lru_cache
 from dash import Dash, html, dcc
 from flask_caching import Cache
