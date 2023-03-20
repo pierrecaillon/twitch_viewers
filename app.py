@@ -1,4 +1,3 @@
-
 import pytz
 import datetime
 import plotly.express as px
@@ -8,6 +7,7 @@ from pathlib import Path
 from datetime import datetime, timedelta, time
 from functools import lru_cache
 from dash import Dash, html, dcc
+from dash.dependencies import Input, Output
 from flask_caching import Cache
 
 
@@ -21,6 +21,7 @@ server = app.server
 
 
 HISTORY_PATH = Path().absolute() / "history.csv"
+
 
 @cache.memoize(timeout=5*60)
 def load_data():
@@ -46,20 +47,6 @@ def compute_24h_report_metrics(date: datetime):
 
 
 def serve_layout():
-    df = load_data()
-    fig = px.line(df, y="count", title="Concurrent viewers over time")
-    fig.update_layout(title_x=0.5)
-    fig.update_xaxes(
-        rangeselector=dict(
-            buttons=list([
-                dict(count=1, label="1h", step="hour", stepmode="backward"),
-                dict(count=1, label="1d", step="day", stepmode="backward"),
-                dict(count=7, label="1w", step="day", stepmode="backward"),
-                dict(step="all")
-            ])
-        )
-    )
-
     daily_report_datetime = datetime.combine(datetime.today(), time(20, 0, 0))
     if datetime.now() < daily_report_datetime:
         daily_report_datetime -= timedelta(days=1)
@@ -68,9 +55,15 @@ def serve_layout():
     return html.Div(children=[
         html.H1('Twitch viewership', className="header-title", style={'textAlign': 'center'}),
 
-        html.Div([f"Live viewers now: ", html.B(df['count'].iloc[-1])]),
+        html.Div(id='live-update-text'),
 
-        dcc.Graph(figure=fig),
+        dcc.Graph(id='live-update-graph'),
+
+        dcc.Interval(
+            id='interval-component',
+            interval=5*60*1000, # in milliseconds
+            n_intervals=0
+        ),
 
         html.Div([
             html.H3(f"Last 24h report (generated at {daily_report_datetime})"),
@@ -90,6 +83,31 @@ def serve_layout():
             ])
         ),
     ])
+
+@app.callback(Output('live-update-graph', 'figure'),
+              Input('interval-component', 'n_intervals'))
+def update_graph_live(n):
+    df = load_data()
+    fig = px.line(df, y="count", title="Concurrent viewers over time")
+    fig.update_layout(title_x=0.5)
+    fig.update_xaxes(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1, label="1h", step="hour", stepmode="backward"),
+                dict(count=1, label="1d", step="day", stepmode="backward"),
+                dict(count=7, label="1w", step="day", stepmode="backward"),
+                dict(step="all")
+            ])
+        )
+    )
+    return fig
+
+
+@app.callback(Output('live-update-text', 'children'),
+              Input('interval-component', 'n_intervals'))
+def update_metric_live(n):
+    df = load_data()
+    return [f"Live viewers now: ", html.B(df['count'].iloc[-1])]
 
 
 app.layout = serve_layout
